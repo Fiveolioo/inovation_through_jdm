@@ -1,2 +1,4 @@
-class fav < ApplicationRecord
+class Fav < ApplicationRecord
+    belongs_to :user
+    belongs_to :car
 end
