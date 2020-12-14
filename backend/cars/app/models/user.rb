@@ -1,5 +1,5 @@
 class User < ApplicationRecord
     has_secure_password
-    has_many :favs
-    has_many :cars, through: :favs
+    has_many :favorites
+    has_many :cars, through: :favorites
 end

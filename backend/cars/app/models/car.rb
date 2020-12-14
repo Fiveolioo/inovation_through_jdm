@@ -1,4 +1,4 @@
 class Car < ApplicationRecord
-    has_many :favs
-    has_many :users, through: :favs
+    has_many :favorites
+    has_many :users, through: :favorites
 end
