@@ -2,11 +2,27 @@ const BASE_URL = "http://localhost:3000"
 const CARS_URL = `${BASE_URL}/cars`
 const USERS_URL = `${BASE_URL}/users`
 const FAVORITES_URL = `${BASE_URL}/favorites`
+const signupForm = document.querySelector('#signup-form')
+const signupInputs = document.querySelectorAll(".signup-input")
+
+const EMPTY_HEART = '♡';
+const FULL_HEART = '♥';
+let = currentUser;
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetchCars();
+  });
 
 function fetchCars() {
     fetch(CARS_URL)
 .then( res => res.json())
 .then( res => renderCars(res));
+}
+
+function fetchFavorites(){
+    fetch(BASE_URL + '/users/' + 1 + '/favorites')
+    .then(res => res.json())
+    .then(favorites => console.log('fav', favorites))
 }
 
 function renderCars(cars) {
@@ -43,14 +59,24 @@ function renderCars(cars) {
         cardContainer.append(carDescription);
 
         const favoriteButton = document.createElement('button');
-        favoriteButton.textContent = 'Like';
+        favoriteButton.textContent = EMPTY_HEART;
         favoriteButton.className = 'favorite-button'
         cardContainer.append(favoriteButton);
-        // addEventListener to favorite a car
-        // have favorite button with id attached
+        favoriteButton.addEventListener('click', () => handleFavoriteCar(car.id, favoriteButton))
 
         carWraps.append(cardContainer);
     })
-}
 
-fetchCars()
+    function handleFavoriteCar(carId, button) {
+        //post favorite with id
+        if (button.style.color === 'red') {
+            // unlike DELETE
+            button.style.color = 'black';
+            button.textContent = EMPTY_HEART;
+        } else {
+            // like POST
+            button.style.color = 'red';
+            button.textContent = FULL_HEART;
+        }
+    }
+}
