@@ -6,7 +6,46 @@ const FAVORITES_URL = `${BASE_URL}/favorites`
 function fetchCars() {
     fetch(CARS_URL)
 .then( res => res.json())
-.then( res => console.log('cars', res));
+.then( res => renderCars(res));
+}
+
+function renderCars(cars) {
+    console.log('cars', cars)
+    const carWraps = document.getElementById('cars-container');
+    carWraps.innerHTML = '';
+    
+    cars.forEach(car => {
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'car-card'
+
+        const carTitleModel = document.createElement('h1');
+        carTitleModel.innerHTML = `${car.make} ${car.model}`
+        cardContainer.append(carTitleModel);
+
+        const year = document.createElement('h2');
+        year.innerHTML = car.year;
+        cardContainer.append(year);
+
+        const carLink = document.createElement('a');
+        carLink.href = car.link;
+        const carImage = document.createElement('img');
+        carImage.src = car.image;
+        carImage.className = 'car-image';
+        carLink.append(carImage);
+        cardContainer.append(carLink);
+
+        const carDescription = document.createElement('h3');
+        carDescription.innerHTML = car.description;
+        cardContainer.append(carDescription);
+
+        const favoriteButton = document.createElement('button');
+        favoriteButton.textContent = 'Like';
+        cardContainer.append(favoriteButton);
+        // addEventListener to favorite a car
+        // have favorite button with id attached
+
+        carWraps.append(cardContainer);
+    })
 }
 
 fetchCars()
