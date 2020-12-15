@@ -16,18 +16,21 @@ function renderCars(cars) {
     
     cars.forEach(car => {
         const cardContainer = document.createElement('div');
-        cardContainer.className = 'car-card'
+        cardContainer.className = 'car-card';
 
         const carTitleModel = document.createElement('h1');
         carTitleModel.innerHTML = `${car.make} ${car.model}`
+        carTitleModel.className = 'car-title';
         cardContainer.append(carTitleModel);
 
         const year = document.createElement('h2');
         year.innerHTML = car.year;
+        year.className = 'car-year';
         cardContainer.append(year);
 
         const carLink = document.createElement('a');
         carLink.href = car.link;
+        carLink.target = '_blank';
         const carImage = document.createElement('img');
         carImage.src = car.image;
         carImage.className = 'car-image';
@@ -36,10 +39,12 @@ function renderCars(cars) {
 
         const carDescription = document.createElement('h3');
         carDescription.innerHTML = car.description;
+        carDescription.className = 'car-description';
         cardContainer.append(carDescription);
 
         const favoriteButton = document.createElement('button');
         favoriteButton.textContent = 'Like';
+        favoriteButton.className = 'favorite-button'
         cardContainer.append(favoriteButton);
         // addEventListener to favorite a car
         // have favorite button with id attached

@@ -1,8 +1,38 @@
+#cars-container {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
 .car-card {
     width: 30%;
+    margin: 1%;
     border: 1px black solid;
+    border-radius: 6px;
+}
+
+.car-title {
+    margin-left: 5%;
+    margin-bottom: -10px;
+    font-size: 25px;
+}
+
+.car-year {
+    margin-left: 5%;
+    font-size: 18px;
 }
 
 .car-image {
     width: 100%;
+    object-fit: cover;
+    height: 40%;
+}
+
+.car-description {
+    margin: 5%;
+    font-size: 16px;
+}
+
+.favorite-button {
+    margin-left: 5%;
 }
