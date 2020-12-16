@@ -4,14 +4,42 @@ const USERS_URL = `${BASE_URL}/users`
 const FAVORITES_URL = `${BASE_URL}/favorites`
 const signupForm = document.querySelector('#signup-form')
 const signupInputs = document.querySelectorAll(".signup-input")
+const logout = document.getElementById('logout');
+const carWraps = document.getElementById('cars-container');
 
 const EMPTY_HEART = '♡';
 const FULL_HEART = '♥';
-let = currentUser;
+let currentUser;
+let favorites = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-    fetchCars();
-  });
+signupForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch(USERS_URL, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: JSON.stringify({
+            user: {
+                email: signupInputs[0].value,
+                password: signupInputs[1].value
+            }
+        })
+    }).then(res => res.json())
+    .then(res => {
+        if (res.message) {
+            alert(res.message);
+        } else {
+            currentUser = res;
+            signupForm.style.display = 'none';
+            carWraps.style.display = 'flex';
+            logout.style.display = 'flex';
+            fetchFavorites();
+            fetchCars();
+        }
+    })
+})
 
 function fetchCars() {
     fetch(CARS_URL)
@@ -20,18 +48,23 @@ function fetchCars() {
 }
 
 function fetchFavorites(){
-    fetch(BASE_URL + '/users/' + 1 + '/favorites')
+    fetch(BASE_URL + '/users/' + currentUser.id + '/favorites')
     .then(res => res.json())
-    .then(favorites => console.log('fav', favorites))
+    .then(res => {
+        favorites = res
+        console.log('res', res)
+    })
 }
 
 function renderCars(cars) {
-    console.log('cars', cars)
-    const carWraps = document.getElementById('cars-container');
     carWraps.innerHTML = '';
-    
     cars.forEach(car => {
-        const cardContainer = document.createElement('div');
+        renderCar(car);
+    })
+}
+
+function renderCar(car) {
+    const cardContainer = document.createElement('div');
         cardContainer.className = 'car-card';
 
         const carTitleModel = document.createElement('h1');
@@ -59,24 +92,43 @@ function renderCars(cars) {
         cardContainer.append(carDescription);
 
         const favoriteButton = document.createElement('button');
-        favoriteButton.textContent = EMPTY_HEART;
+        const favorite = favorites.find(fav => fav.car_id === car.id)
+        favoriteButton.textContent = favorite ? FULL_HEART : EMPTY_HEART;
+        favoriteButton.style.color = favorite ? 'red' : 'black';
         favoriteButton.className = 'favorite-button'
         cardContainer.append(favoriteButton);
         favoriteButton.addEventListener('click', () => handleFavoriteCar(car.id, favoriteButton))
 
         carWraps.append(cardContainer);
-    })
+}
 
-    function handleFavoriteCar(carId, button) {
-        //post favorite with id
-        if (button.style.color === 'red') {
-            // unlike DELETE
+function handleFavoriteCar(carId, button) {
+    if (button.style.color === 'red') {
+        const favorite = favorites.find(fav => fav.car_id === carId);
+        fetch(FAVORITES_URL + '/' + favorite.id, {
+            method: "DELETE"
+        }).then(() => {
+            fetchFavorites();
             button.style.color = 'black';
             button.textContent = EMPTY_HEART;
-        } else {
-            // like POST
-            button.style.color = 'red';
-            button.textContent = FULL_HEART;
-        }
+        })
+    } else {
+        fetch(FAVORITES_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json"
+            },
+            body: JSON.stringify({
+                    user_id: `${currentUser.id}`,
+                    car_id: `${carId}`
+            })
+    })
+    .then( res => res.json())
+    .then(() => {
+        fetchFavorites();
+        button.style.color = 'red';
+        button.textContent = FULL_HEART;
+    }); 
     }
 }

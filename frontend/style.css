@@ -1,5 +1,36 @@
-#cars-container {
+body {
+    margin: 0;
+}
+
+#header {
     display: flex;
+    justify-content: space-between;
+    background-color: black;
+    width: 100%;
+    height: 100px;
+}
+
+#brand-title {
+    color: white;
+    font-size: 40px;
+    line-height: 250%;
+    margin-left: 2%;
+}
+
+#logout {
+    display: none;
+    color: white;
+    font-size: 40px;
+    line-height: 250%;
+    margin-right: 2%;
+}
+
+#signup-form {
+    margin: 2%;
+}
+
+#cars-container {
+    display: none;
     justify-content: flex-start;
     flex-wrap: wrap;
 }
@@ -35,4 +66,8 @@
 
 .favorite-button {
     margin-left: 5%;
+}
+
+#favorites-container {
+    display: none;
 }
