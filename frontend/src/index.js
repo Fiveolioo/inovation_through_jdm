@@ -6,6 +6,7 @@ const signupForm = document.querySelector('#signup-form')
 const signupInputs = document.querySelectorAll(".signup-input")
 const logout = document.getElementById('logout');
 const carWraps = document.getElementById('cars-container');
+const subHeader = document.getElementById('sub-header');
 
 const EMPTY_HEART = '♡';
 const FULL_HEART = '♥';
@@ -26,7 +27,9 @@ signupForm.addEventListener('submit', function(e) {
                 password: signupInputs[1].value
             }
         })
-    }).then(res => res.json())
+    }).then(res => {
+        return res.json()
+    })
     .then(res => {
         if (res.message) {
             alert(res.message);
@@ -35,11 +38,40 @@ signupForm.addEventListener('submit', function(e) {
             signupForm.style.display = 'none';
             carWraps.style.display = 'flex';
             logout.style.display = 'flex';
+            subHeader.style.display = 'flex';
             fetchFavorites();
-            fetchCars();
+            renderSubHeader();
         }
     })
+    .catch(err => {
+        console.log('err', err)
+    })
 })
+
+function renderSubHeader() {
+    subHeader.innerHTML = '';
+    const greeting = document.createElement("div");
+    greeting.innerHTML = `Hello ${currentUser.email}!`
+    subHeader.append(greeting);
+
+    const homeLink = document.createElement("div");
+    homeLink.innerHTML = "Home";
+    homeLink.addEventListener('click', () => {
+        // hide favorites
+        // renderCars
+        // show cars
+    })
+    subHeader.append(homeLink);
+
+    const favoritesLink = document.createElement("div");
+    favoritesLink.innerHTML = "Favorites"
+    favoritesLink.addEventListener('click', () => {
+        // hide cars
+        // renderFavoriteCars
+        // show favoriteCars
+    })
+    subHeader.append(favoritesLink)
+}
 
 function fetchCars() {
     fetch(CARS_URL)
@@ -53,6 +85,7 @@ function fetchFavorites(){
     .then(res => {
         favorites = res
         console.log('res', res)
+        fetchCars();
     })
 }
 
