@@ -33,6 +33,11 @@ body {
     margin-top: 10px;
 }
 
+.section {
+    color: blue;
+    text-decoration: underline;
+}
+
 #signup-form {
     margin: 2%;
 }
@@ -78,4 +83,6 @@ body {
 
 #favorites-container {
     display: none;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }

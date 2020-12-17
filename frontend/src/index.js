@@ -5,7 +5,8 @@ const FAVORITES_URL = `${BASE_URL}/favorites`
 const signupForm = document.querySelector('#signup-form')
 const signupInputs = document.querySelectorAll(".signup-input")
 const logout = document.getElementById('logout');
-const carWraps = document.getElementById('cars-container');
+const carContainer = document.getElementById('cars-container');
+const favoritesContainer = document.getElementById('favorites-container');
 const subHeader = document.getElementById('sub-header');
 
 const EMPTY_HEART = '♡';
@@ -36,7 +37,9 @@ signupForm.addEventListener('submit', function(e) {
         } else {
             currentUser = res;
             signupForm.style.display = 'none';
-            carWraps.style.display = 'flex';
+            signupInputs[0].value = null;
+            signupInputs[1].value = null;
+            carContainer.style.display = 'flex';
             logout.style.display = 'flex';
             subHeader.style.display = 'flex';
             fetchFavorites();
@@ -48,6 +51,15 @@ signupForm.addEventListener('submit', function(e) {
     })
 })
 
+logout.addEventListener('click', () => {
+    carContainer.style.display = 'none';
+    favoritesContainer.style.display = 'none';
+    subHeader.style.display = 'none';
+    logout.style.display = 'none';
+    signupForm.style.display = 'block';
+    currentUser = null;
+})
+
 function renderSubHeader() {
     subHeader.innerHTML = '';
     const greeting = document.createElement("div");
@@ -55,20 +67,23 @@ function renderSubHeader() {
     subHeader.append(greeting);
 
     const homeLink = document.createElement("div");
+    homeLink.className = "section";
     homeLink.innerHTML = "Home";
     homeLink.addEventListener('click', () => {
-        // hide favorites
-        // renderCars
-        // show cars
+        favoritesContainer.style.display = 'none';
+        fetchCars();
+        carContainer.style.display = 'flex';
     })
     subHeader.append(homeLink);
 
     const favoritesLink = document.createElement("div");
+    favoritesLink.className = 'section';
     favoritesLink.innerHTML = "Favorites"
     favoritesLink.addEventListener('click', () => {
-        // hide cars
+        carContainer.style.display = 'none';
+        renderFavoriteCars();
         // renderFavoriteCars
-        // show favoriteCars
+        favoritesContainer.style.display = 'flex';
     })
     subHeader.append(favoritesLink)
 }
@@ -84,19 +99,25 @@ function fetchFavorites(){
     .then(res => res.json())
     .then(res => {
         favorites = res
-        console.log('res', res)
         fetchCars();
     })
 }
 
-function renderCars(cars) {
-    carWraps.innerHTML = '';
-    cars.forEach(car => {
-        renderCar(car);
+function renderFavoriteCars() {
+    favoritesContainer.innerHTML = '';
+    favorites.forEach(favorite => {
+        renderCar(favorite.car, favoritesContainer)
     })
 }
 
-function renderCar(car) {
+function renderCars(cars) {
+    carContainer.innerHTML = '';
+    cars.forEach(car => {
+        renderCar(car, carContainer);
+    })
+}
+
+function renderCar(car, container) {
     const cardContainer = document.createElement('div');
         cardContainer.className = 'car-card';
 
@@ -132,7 +153,7 @@ function renderCar(car) {
         cardContainer.append(favoriteButton);
         favoriteButton.addEventListener('click', () => handleFavoriteCar(car.id, favoriteButton))
 
-        carWraps.append(cardContainer);
+        container.append(cardContainer);
 }
 
 function handleFavoriteCar(carId, button) {
