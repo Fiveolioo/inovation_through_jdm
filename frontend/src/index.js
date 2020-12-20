@@ -82,7 +82,6 @@ function renderSubHeader() {
     favoritesLink.addEventListener('click', () => {
         carContainer.style.display = 'none';
         renderFavoriteCars();
-        // renderFavoriteCars
         favoritesContainer.style.display = 'flex';
     })
     subHeader.append(favoritesLink)
