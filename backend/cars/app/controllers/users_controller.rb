@@ -4,18 +4,18 @@ class UsersController < ApplicationController
     end
 
     def create
-     user = User.find_by(email: user_params["email"])
-        if user && user.authenticate(user_params  ["password"])
-          session[:user_id] = user.id
-          render json: user, except: [:created_at, :updated_at]
-        elsif user
-           render json: {message: "Sign-up Failed"}
-        else
-           user = User.new(user_params)
-           user.save
+      user = User.find_by(email: user_params["email"])
+         if user && user.authenticate(user_params["password"])
+           session[:user_id] = user.id
            render json: user, except: [:created_at, :updated_at]
-        end
-    end
+         elsif user
+            render json: {message: "Sign-up Failed"}
+         else
+            user = User.new(user_params)
+            user.save
+            render json: user, except: [:created_at, :updated_at]
+         end
+     end
 
     def show
         user = User.find_by(id: params[:id])
