@@ -14,6 +14,28 @@ const FULL_HEART = '♥';
 let currentUser;
 let favorites = [];
 
+class Car {
+    constructor(carAttributes) {
+        this.make = carAttributes.make;
+        this.model = carAttributes.model;
+        this.year = carAttributes.year;
+        this.description = carAttributes.description;
+        this.link = carAttributes.link;
+        this.image = carAttributes.image;
+        this.id = carAttributes.id;
+    }
+render() {
+    const favorite = favorites.find(fav => fav.car_id === this.id)
+        return `<div class='car-card'>
+            <h1 class='car-title'>${this.make} ${this.model}</h1>
+            <h2 class='car-year'>${this.year}</h2>
+            <a href=${this.link} target='_blank'><img src=${this.image} class='car-image' ></a>
+            <h3 class='car-description'>${this.description}</h3>
+            <button data-car-id=${this.id} class='favorite-button' style="color:${favorite ? 'red' : 'black'};">${favorite ? FULL_HEART : EMPTY_HEART}</button>
+        </div>`
+    }
+}
+
 signupForm.addEventListener('submit', function(e) {
     e.preventDefault();
     fetch(USERS_URL, {
@@ -71,7 +93,6 @@ function renderSubHeader() {
     homeLink.innerHTML = "Home";
     homeLink.addEventListener('click', () => {
         favoritesContainer.style.display = 'none';
-        fetchCars();
         carContainer.style.display = 'flex';
     })
     subHeader.append(homeLink);
@@ -90,7 +111,7 @@ function renderSubHeader() {
 function fetchCars() {
     fetch(CARS_URL)
 .then( res => res.json())
-.then( res => renderCars(res));
+.then( res => renderCars(res, carContainer));
 }
 
 function fetchFavorites(){
@@ -98,90 +119,48 @@ function fetchFavorites(){
     .then(res => res.json())
     .then(res => {
         favorites = res
+        renderFavoriteCars();
         fetchCars();
     })
 }
 
 function renderFavoriteCars() {
-    favoritesContainer.innerHTML = '';
-    favorites.forEach(favorite => {
-        renderCar(favorite.car, favoritesContainer)
-    })
+    let favoriteCars = favorites.map(fav => fav.car);
+    renderCars(favoriteCars, favoritesContainer, true)
 }
 
-function renderCars(cars) {
-    carContainer.innerHTML = '';
+function renderCars(cars, container, isFavoritesLink=false) {
+    container.innerHTML = '';
     cars.forEach(car => {
-        renderCar(car, carContainer);
+        container.innerHTML += new Car(car).render()
     })
-}
-
-function renderCar(car, container) {
-    const cardContainer = document.createElement('div');
-        cardContainer.className = 'car-card';
-
-        const carTitleModel = document.createElement('h1');
-        carTitleModel.innerHTML = `${car.make} ${car.model}`
-        carTitleModel.className = 'car-title';
-        cardContainer.append(carTitleModel);
-
-        const year = document.createElement('h2');
-        year.innerHTML = car.year;
-        year.className = 'car-year';
-        cardContainer.append(year);
-
-        const carLink = document.createElement('a');
-        carLink.href = car.link;
-        carLink.target = '_blank';
-        const carImage = document.createElement('img');
-        carImage.src = car.image;
-        carImage.className = 'car-image';
-        carLink.append(carImage);
-        cardContainer.append(carLink);
-
-        const carDescription = document.createElement('h3');
-        carDescription.innerHTML = car.description;
-        carDescription.className = 'car-description';
-        cardContainer.append(carDescription);
-
-        const favoriteButton = document.createElement('button');
-        const favorite = favorites.find(fav => fav.car_id === car.id)
-        favoriteButton.textContent = favorite ? FULL_HEART : EMPTY_HEART;
-        favoriteButton.style.color = favorite ? 'red' : 'black';
-        favoriteButton.className = 'favorite-button'
-        cardContainer.append(favoriteButton);
-        favoriteButton.addEventListener('click', () => handleFavoriteCar(car.id, favoriteButton))
-
-        container.append(cardContainer);
-}
-
-function handleFavoriteCar(carId, button) {
-    if (button.style.color === 'red') {
-        const favorite = favorites.find(fav => fav.car_id === carId);
-        fetch(FAVORITES_URL + '/' + favorite.id, {
-            method: "DELETE"
-        }).then(() => {
-            fetchFavorites();
-            button.style.color = 'black';
-            button.textContent = EMPTY_HEART;
-        })
-    } else {
-        fetch(FAVORITES_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json"
-            },
-            body: JSON.stringify({
-                    user_id: `${currentUser.id}`,
-                    car_id: `${carId}`
+    let favoriteButtons = document.querySelectorAll('.favorite-button')
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (e.target.style.color !== 'red') {
+                fetch(FAVORITES_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json"
+                    },
+                    body: JSON.stringify({
+                            user_id: `${currentUser.id}`,
+                            car_id: `${e.target.dataset.carId}`
+                    })
             })
+            .then( res => res.json())
+            .then(() => {
+                fetchFavorites()
+            }); 
+            } else {
+                const favorite = favorites.find(fav => fav.car_id.toString() === e.target.dataset.carId);
+                fetch(FAVORITES_URL + '/' + favorite.id, {
+                    method: "DELETE"
+                }).then(() => {
+                    fetchFavorites();
+                })
+            }
+        })
     })
-    .then( res => res.json())
-    .then(() => {
-        fetchFavorites();
-        button.style.color = 'red';
-        button.textContent = FULL_HEART;
-    }); 
-    }
 }
