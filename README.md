@@ -1,4 +1,4 @@
-# Invation Through JDM
+# Innovation Through JDM
 
 Welcome to Innovation Through JDM! Learn history about all of Japan's greatest automotive inventions through the years of making. Also add cars that are your favorite to your favorite's list!
 

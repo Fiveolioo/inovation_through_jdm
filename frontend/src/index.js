@@ -126,10 +126,10 @@ function fetchFavorites(){
 
 function renderFavoriteCars() {
     let favoriteCars = favorites.map(fav => fav.car);
-    renderCars(favoriteCars, favoritesContainer, true)
+    renderCars(favoriteCars, favoritesContainer)
 }
 
-function renderCars(cars, container, isFavoritesLink=false) {
+function renderCars(cars, container) {
     container.innerHTML = '';
     cars.forEach(car => {
         container.innerHTML += new Car(car).render()
